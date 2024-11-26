@@ -3,6 +3,7 @@
 A ReactJS application that allows users to search for movies, view detailed information, and manage a list of favorites using the OMDB API.
 
 ## Features
+
 - **Movie Search**: Search for movies by titles or keywords using the OMDB API.
 - **Search Results Display**: Display search results in a grid or list format, showing movie posters, titles, and brief descriptions.
 - **Pagination**: Implement pagination to handle large sets of search results.
@@ -13,6 +14,7 @@ A ReactJS application that allows users to search for movies, view detailed info
 - **Favorites Management**: Add and remove movies from a list of favorites.
 
 ## Tech Stack
+
 - ReactJS
 - React Router
 - HTML/CSS
