@@ -1,4 +1,4 @@
-const API_KEY = import.meta.env.VITE_OMDB_API_KEY;
+const API_KEY = "45259d3b";
 const BASE_URL = "http://www.omdbapi.com/";
 
 export const fetchMovies = async (query, page = 1, type = "") => {
