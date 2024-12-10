@@ -14,3 +14,6 @@ A complete CRUD (Create, Read, Update, Delete) application for managing recipes 
 - **Express.js**
 - **Mongoose (MongoDB)**
 - **Postman** (for API documentation)
+
+This is the link for postman documentation                  
+https://documenter.getpostman.com/view/40259645/2sAYBd8oJ7
