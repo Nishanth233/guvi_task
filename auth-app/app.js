@@ -12,6 +12,11 @@ connectDB();
 // Middleware
 app.use(bodyParser.json());
 
+// Root Route
+app.get("/", (req, res) => {
+  res.send("Welcome to the Auth API!");
+});
+
 // Routes
 app.use("/api/auth", authRoutes);
 
