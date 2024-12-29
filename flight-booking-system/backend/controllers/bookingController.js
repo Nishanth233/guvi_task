@@ -1,6 +1,6 @@
 const { sendEmail } = require('../services/emailService');
 const { sendSMS } = require('../services/smsService');
-const Booking = require('../models/booking');
+const Booking = require('../models/Booking');
 
 // Create a new booking
 exports.bookFlight = async (req, res) => {
