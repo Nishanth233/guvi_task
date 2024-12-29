@@ -6,11 +6,6 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
 });
 
-// Use createIndexes to replace ensureIndex
-userSchema.index({ email: 1 }, { unique: true });
-
 const User = mongoose.model('User', userSchema);
-
-User.createIndexes(); // Ensure indexes are created
 
 module.exports = User;
