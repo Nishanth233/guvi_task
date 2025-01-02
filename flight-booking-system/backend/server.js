@@ -14,20 +14,8 @@ dotenv.config();
 const app = express();
 connectDB();
 
-app.use(
-  cors({
-    origin: "https://flight-go-2pcw.onrender.com",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
-    allowedHeaders:
-      "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-  })
-);
+app.use(cors());
 app.use(bodyParser.json());
-
-app.options("*", cors());
-
 app.use("/api/users", userRoutes);
 app.use("/api/flights", flightRoutes);
 app.use("/api/bookings", bookingRoutes);
