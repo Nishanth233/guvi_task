@@ -25,7 +25,9 @@ app.use(
   })
 );
 app.use(bodyParser.json());
+
 app.options("*", cors());
+
 app.use("/api/users", userRoutes);
 app.use("/api/flights", flightRoutes);
 app.use("/api/bookings", bookingRoutes);
