@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 connectDB();
 
-app.use(cors({ origin: "https://celebrated-blini-9c2778.netlify.app" }));
+app.use(cors());
 app.use(bodyParser.json());
 app.use("/api/users", userRoutes);
 app.use("/api/flights", flightRoutes);
