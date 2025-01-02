@@ -14,8 +14,18 @@ dotenv.config();
 const app = express();
 connectDB();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
+    allowedHeaders:
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+  })
+);
 app.use(bodyParser.json());
+app.options("*", cors());
 app.use("/api/users", userRoutes);
 app.use("/api/flights", flightRoutes);
 app.use("/api/bookings", bookingRoutes);
