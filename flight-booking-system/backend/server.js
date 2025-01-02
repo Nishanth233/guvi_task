@@ -16,7 +16,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: "*",
+    origin: "https://flight-go-2pcw.onrender.com",
     methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
     preflightContinue: false,
     optionsSuccessStatus: 204,
