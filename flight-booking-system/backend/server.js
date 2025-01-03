@@ -13,12 +13,11 @@ dotenv.config();
 
 const app = express();
 connectDB();
-
 app.use(
   cors({
-    orgin: [
-      "http://localhost:5173/register",
-      "https://flight-go-2pcw.onrender.com/",
+    origin: [
+      "http://localhost:5173",
+      "https://whimsical-frangollo-d3543a.netlify.app",
     ],
   })
 );
