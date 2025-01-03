@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://whimsical-frangollo-d3543a.netlify.app",
+      "https://brilliant-pastelito-16e5a5.netlify.app",
     ],
   })
 );
