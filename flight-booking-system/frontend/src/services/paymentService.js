@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = `${import.meta.env.VITE_API_BASE_URL}/api/payments/create`;
+const API_URL = `https://flight-4ll6.onrender.com/api/payments/create`;
 
 const processPayment = async (paymentData) => {
   const response = await axios.post(API_URL, paymentData, {

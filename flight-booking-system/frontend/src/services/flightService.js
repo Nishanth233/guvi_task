@@ -1,8 +1,6 @@
 import axios from "axios";
 
-const API_URL = `${
-  import.meta.env.VITE_API_BASE_URL
-}/api/amadeus/search-flights`;
+const API_URL = `https://flight-4ll6.onrender.com/api/amadeus/search-flights`;
 
 const searchFlights = async (searchData) => {
   const response = await axios.get(API_URL, {
