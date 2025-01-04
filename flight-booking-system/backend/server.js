@@ -18,10 +18,6 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://brilliant-pastelito-16e5a5.netlify.app",
-      "https://brilliant-pastelito-16e5a5.netlify.app/register",
-      "https://brilliant-pastelito-16e5a5.netlify.app/login",
-      "https://brilliant-pastelito-16e5a5.netlify.app/flights",
-      "https://brilliant-pastelito-16e5a5.netlify.app/bookings",
     ],
   })
 );
