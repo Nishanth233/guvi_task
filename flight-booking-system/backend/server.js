@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://genuine-tulumba-0404ea.netlify.app",
+      "https://incredible-mousse-9bd6ac.netlify.app",
     ],
   })
 );
