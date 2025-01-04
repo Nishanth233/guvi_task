@@ -17,7 +17,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://brilliant-pastelito-16e5a5.netlify.app",
+      "https://genuine-tulumba-0404ea.netlify.app",
     ],
   })
 );
