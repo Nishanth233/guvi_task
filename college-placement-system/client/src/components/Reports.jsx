@@ -12,7 +12,7 @@ const Reports = () => {
 
   const fetchMetrics = async () => {
     try {
-      const response = await fetch("http://localhost:5000/metrics");
+      const response = await fetch("https://college-sys.onrender.com/metrics");
       if (!response.ok) {
         throw new Error("Failed to fetch metrics");
       }

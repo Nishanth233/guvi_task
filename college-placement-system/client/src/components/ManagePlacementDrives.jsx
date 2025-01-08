@@ -13,7 +13,9 @@ const ManagePlacementDrives = () => {
 
   const fetchPlacementDrives = async () => {
     try {
-      const response = await fetch("http://localhost:5000/placement-drives");
+      const response = await fetch(
+        "https://college-sys.onrender.com/placement-drives"
+      );
       const data = await response.json();
       setPlacementDrives(data);
     } catch (err) {
@@ -23,7 +25,9 @@ const ManagePlacementDrives = () => {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch("http://localhost:5000/companies");
+      const response = await fetch(
+        "https://college-sys.onrender.com/companies"
+      );
       const data = await response.json();
       setCompanies(data);
     } catch (err) {
@@ -46,7 +50,7 @@ const ManagePlacementDrives = () => {
     };
     try {
       const response = await fetch(
-        "http://localhost:5000/placement-drives/create",
+        "https://college-sys.onrender.com/placement-drives/create",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

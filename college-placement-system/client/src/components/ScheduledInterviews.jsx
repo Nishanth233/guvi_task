@@ -12,7 +12,9 @@ const ScheduledInterviews = () => {
 
   const fetchInterviews = async () => {
     try {
-      const response = await fetch("http://localhost:5000/interviews");
+      const response = await fetch(
+        "https://college-sys.onrender.com/interviews"
+      );
       if (!response.ok) {
         throw new Error("Failed to fetch interviews");
       }

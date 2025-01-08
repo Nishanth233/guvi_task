@@ -11,7 +11,9 @@ const ManageCompanies = () => {
 
   const fetchCompanies = async () => {
     try {
-      const response = await fetch("http://localhost:5000/companies");
+      const response = await fetch(
+        "https://college-sys.onrender.com/companies"
+      );
       const data = await response.json();
       setCompanies(data);
     } catch (err) {
@@ -24,11 +26,14 @@ const ManageCompanies = () => {
     const companyName = e.target.companyName.value;
     const newCompany = { name: companyName, jobListings: [] };
     try {
-      const response = await fetch("http://localhost:5000/companies/add", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newCompany),
-      });
+      const response = await fetch(
+        "https://college-sys.onrender.com/companies/add",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newCompany),
+        }
+      );
       const data = await response.json();
       setCompanies([...companies, data]);
     } catch (err) {
