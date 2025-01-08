@@ -10,6 +10,7 @@ const ScheduleInterview = () => {
     date: "",
     format: "virtual",
   });
+  const [successMessage, setSuccessMessage] = useState("");
 
   const handleChange = (e) => {
     setForm({
@@ -31,6 +32,7 @@ const ScheduleInterview = () => {
       );
       const data = await response.json();
       console.log(data);
+      setSuccessMessage("Interview scheduled successfully!");
     } catch (err) {
       console.error(err);
     }
@@ -38,78 +40,81 @@ const ScheduleInterview = () => {
 
   return (
     <div>
-    <Header/>
-    <form
-      onSubmit={handleSubmit}
-      className="p-6 bg-gray-100 rounded-lg shadow-md"
-    >
-      <div>
-        <label className="block text-gray-700">Student ID</label>
-        <input
-          type="text"
-          name="student"
-          value={form.student}
-          onChange={handleChange}
-          placeholder="Student ID"
-          required
-          className="w-full p-2 mt-1 border rounded-lg"
-        />
-      </div>
-      <div>
-        <label className="block text-gray-700">Company</label>
-        <input
-          type="text"
-          name="company"
-          value={form.company}
-          onChange={handleChange}
-          placeholder="Company"
-          required
-          className="w-full p-2 mt-1 border rounded-lg"
-        />
-      </div>
-      <div>
-        <label className="block text-gray-700">Position</label>
-        <input
-          type="text"
-          name="position"
-          value={form.position}
-          onChange={handleChange}
-          placeholder="Position"
-          required
-          className="w-full p-2 mt-1 border rounded-lg"
-        />
-      </div>
-      <div>
-        <label className="block text-gray-700">Date</label>
-        <input
-          type="datetime-local"
-          name="date"
-          value={form.date}
-          onChange={handleChange}
-          required
-          className="w-full p-2 mt-1 border rounded-lg"
-        />
-      </div>
-      <div>
-        <label className="block text-gray-700">Format</label>
-        <select
-          name="format"
-          value={form.format}
-          onChange={handleChange}
-          className="w-full p-2 mt-1 border rounded-lg"
-        >
-          <option value="virtual">Virtual</option>
-          <option value="in-person">In-person</option>
-        </select>
-      </div>
-      <button
-        type="submit"
-        className="w-full p-2 mt-4 text-white bg-blue-500 rounded-lg"
+      <Header />
+      <form
+        onSubmit={handleSubmit}
+        className="p-6 bg-gray-100 rounded-lg shadow-md"
       >
-        Schedule Interview
-      </button>
-    </form>
-    <Footer/>
+        <div>
+          <label className="block text-gray-700">Student ID</label>
+          <input
+            type="text"
+            name="student"
+            value={form.student}
+            onChange={handleChange}
+            placeholder="Student ID"
+            required
+            className="w-full p-2 mt-1 border rounded-lg"
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700">Company</label>
+          <input
+            type="text"
+            name="company"
+            value={form.company}
+            onChange={handleChange}
+            placeholder="Company"
+            required
+            className="w-full p-2 mt-1 border rounded-lg"
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700">Position</label>
+          <input
+            type="text"
+            name="position"
+            value={form.position}
+            onChange={handleChange}
+            placeholder="Position"
+            required
+            className="w-full p-2 mt-1 border rounded-lg"
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700">Date</label>
+          <input
+            type="datetime-local"
+            name="date"
+            value={form.date}
+            onChange={handleChange}
+            required
+            className="w-full p-2 mt-1 border rounded-lg"
+          />
+        </div>
+        <div>
+          <label className="block text-gray-700">Format</label>
+          <select
+            name="format"
+            value={form.format}
+            onChange={handleChange}
+            className="w-full p-2 mt-1 border rounded-lg"
+          >
+            <option value="virtual">Virtual</option>
+            <option value="in-person">In-person</option>
+          </select>
+        </div>
+        <button
+          type="submit"
+          className="w-full p-2 mt-4 text-white bg-blue-500 rounded-lg"
+        >
+          Schedule Interview
+        </button>
+      </form>
+      {successMessage && (
+        <div className="mt-4 text-green-500">{successMessage}</div>
+      )}
+      <Footer />
     </div>
   );
 };
