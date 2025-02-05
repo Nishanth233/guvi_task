@@ -8,7 +8,7 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB connection
-mongoose.connect("mongodb://localhost:27017/college-placement", {
+mongoose.connect("mongodb+srv://Nishanth:shan123@cluster0.2jfna.mongodb.net/project", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
