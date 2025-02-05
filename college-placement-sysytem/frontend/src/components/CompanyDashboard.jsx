@@ -15,12 +15,12 @@ const CompanyDashboard = () => {
     const fetchData = async () => {
       try {
         const companiesResponse = await axios.get(
-          "http://localhost:5000/api/companies"
+          "http://college-6hu8.onrender.com/api/companies"
         );
         setCompanies(companiesResponse.data);
 
         const jobListingsResponse = await axios.get(
-          "http://localhost:5000/api/jobListings"
+          "http://college-6hu8.onrender.com/api/jobListings"
         );
         setJobListings(jobListingsResponse.data);
       } catch (error) {
@@ -38,7 +38,7 @@ const CompanyDashboard = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/jobListings",
+        "http://college-6hu8.onrender.com/api/jobListings",
         formData
       );
       const newJobListing = response.data.jobListing;

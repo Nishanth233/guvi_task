@@ -15,7 +15,7 @@ const CompanyDataIntegration = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/importCompanyData",
+        "http://college-6hu8.onrender.com/api/importCompanyData",
         formData,
         {
           headers: {
@@ -32,7 +32,7 @@ const CompanyDataIntegration = () => {
   const handleExport = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/exportCompanyData"
+        "http://college-6hu8.onrender.com/api/exportCompanyData"
       );
       setCompanies(response.data);
     } catch (error) {

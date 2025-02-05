@@ -20,7 +20,7 @@ const RegisterCompany = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/companies/register",
+        "http://college-6hu8.onrender.com/api/companies/register",
         formData
       );
       setSuccessMessage("Company registered successfully!");

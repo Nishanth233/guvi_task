@@ -12,7 +12,7 @@ const RecruitmentDashboard = () => {
   useEffect(() => {
     const fetchMetrics = async () => {
       const response = await axios.get(
-        "http://localhost:5000/api/recruitmentStatus"
+        "http://college-6hu8.onrender.com/api/recruitmentStatus"
       );
       setMetrics(response.data);
     };
