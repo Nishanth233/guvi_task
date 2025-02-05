@@ -10,7 +10,7 @@ const Navigation = ({ role }) => {
     <nav className="bg-gray-800 p-4">
       {role === "admin" && (
         <>
-          <Link to="/" className="text-white px-3">
+          <Link to="/home" className="text-white px-3">
             Home
           </Link>
           <Link to="/applications" className="text-white px-3">
@@ -50,7 +50,7 @@ const Navigation = ({ role }) => {
       )}
       {role === "student" && (
         <>
-          <Link to="/" className="text-white px-3">
+          <Link to="/home" className="text-white px-3">
             Home
           </Link>
           <Link to="/applications" className="text-white px-3">
@@ -72,7 +72,7 @@ const Navigation = ({ role }) => {
       )}
       {role === "company" && (
         <>
-          <Link to="/" className="text-white px-3">
+          <Link to="/home" className="text-white px-3">
             Home
           </Link>
           <Link to="/recruitment" className="text-white px-3">
