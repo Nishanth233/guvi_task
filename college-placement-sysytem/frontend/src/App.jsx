@@ -36,7 +36,7 @@ const App = () => {
       </h1>
       {userRole && <Navigation role={userRole} />}
       <Routes>
-        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<Register />} />
         <Route path="/login" element={<Login setUserRole={setUserRole} />} />
         <Route path="/logout" element={<Logout setUserRole={setUserRole} />} />
         <Route path="/home" element={<Home />} />
