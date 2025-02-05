@@ -14,11 +14,11 @@ const PlacementDriveManager = () => {
   useEffect(() => {
     const fetchData = async () => {
       const companiesResponse = await axios.get(
-        "http://college-6hu8.onrender.com/api/companies"
+        "https://college-6hu8.onrender.com/api/companies"
       );
       setCompanies(companiesResponse.data);
       const placementDrivesResponse = await axios.get(
-        "http://college-6hu8.onrender.com/api/placementDrives"
+        "https://college-6hu8.onrender.com/api/placementDrives"
       );
       setPlacementDrives(placementDrivesResponse.data);
     };
@@ -41,7 +41,7 @@ const PlacementDriveManager = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://college-6hu8.onrender.com/api/placementDrives",
+        "https://college-6hu8.onrender.com/api/placementDrives",
         formData
       );
       const newDrive = response.data;

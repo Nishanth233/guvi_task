@@ -18,7 +18,7 @@ const Register = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://college-6hu8.onrender.com/api/auth/register",
+        "https://college-6hu8.onrender.com/api/auth/register",
         formData
       );
       console.log(response.data.message);

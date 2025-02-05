@@ -15,7 +15,7 @@ const JobListings = () => {
     const fetchJobListings = async () => {
       try {
         const response = await axios.get(
-          "http://college-6hu8.onrender.com/api/jobListings"
+          "https://college-6hu8.onrender.com/api/jobListings"
         );
         setJobListings(response.data);
       } catch (error) {
@@ -27,7 +27,7 @@ const JobListings = () => {
     const fetchCompanies = async () => {
       try {
         const response = await axios.get(
-          "http://college-6hu8.onrender.com/api/companies"
+          "https://college-6hu8.onrender.com/api/companies"
         );
         setCompanies(response.data);
       } catch (error) {
@@ -47,7 +47,7 @@ const JobListings = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://college-6hu8.onrender.com/api/jobListings",
+        "https://college-6hu8.onrender.com/api/jobListings",
         formData
       );
       setJobListings([...jobListings, response.data.jobListing]);

@@ -14,7 +14,7 @@ const Login = ({ setUserRole }) => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://college-6hu8.onrender.com/api/auth/login",
+        "https://college-6hu8.onrender.com/api/auth/login",
         formData
       );
       const { token, role } = response.data;

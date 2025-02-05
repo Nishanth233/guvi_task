@@ -20,7 +20,7 @@ const ApplicationForm = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://college-6hu8.onrender.com/api/applications",
+        "https://college-6hu8.onrender.com/api/applications",
         formData
       );
       setSuccessMessage("Application submitted successfully!");

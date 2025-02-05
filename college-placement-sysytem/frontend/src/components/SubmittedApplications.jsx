@@ -8,7 +8,7 @@ const SubmittedApplications = () => {
     const fetchApplications = async () => {
       try {
         const response = await axios.get(
-          "http://college-6hu8.onrender.com/api/applications"
+          "https://college-6hu8.onrender.com/api/applications"
         );
         setApplications(response.data);
       } catch (error) {

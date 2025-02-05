@@ -7,7 +7,7 @@ const AcademicRecords = () => {
   useEffect(() => {
     const fetchAcademicRecords = async () => {
       const response = await axios.get(
-        "http://college-6hu8.onrender.com/api/academicRecords"
+        "https://college-6hu8.onrender.com/api/academicRecords"
       );
       setAcademicRecords(response.data);
     };

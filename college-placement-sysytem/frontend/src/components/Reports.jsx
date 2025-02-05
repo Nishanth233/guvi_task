@@ -33,7 +33,7 @@ const Reports = () => {
   useEffect(() => {
     const fetchReportData = async () => {
       const response = await axios.get(
-        "http://college-6hu8.onrender.com/api/placementReports"
+        "https://college-6hu8.onrender.com/api/placementReports"
       );
       setReportData(response.data);
     };

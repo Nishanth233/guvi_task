@@ -17,7 +17,7 @@ const InterviewScheduler = () => {
     const fetchData = async () => {
       try {
         const studentsResponse = await axios.get(
-          "http://college-6hu8.onrender.com/api/students"
+          "https://college-6hu8.onrender.com/api/students"
         );
         console.log("Fetched students:", studentsResponse.data);
         setStudents(studentsResponse.data);
@@ -26,7 +26,7 @@ const InterviewScheduler = () => {
       }
       try {
         const companiesResponse = await axios.get(
-          "http://college-6hu8.onrender.com/api/companies"
+          "https://college-6hu8.onrender.com/api/companies"
         );
         console.log("Fetched companies:", companiesResponse.data);
         setCompanies(companiesResponse.data);
@@ -35,7 +35,7 @@ const InterviewScheduler = () => {
       }
       try {
         const interviewsResponse = await axios.get(
-          "http://college-6hu8.onrender.com/api/interviews"
+          "https://college-6hu8.onrender.com/api/interviews"
         );
         console.log("Fetched interviews:", interviewsResponse.data);
         setInterviews(interviewsResponse.data);
@@ -58,7 +58,7 @@ const InterviewScheduler = () => {
         return;
       }
       const response = await axios.post(
-        "http://college-6hu8.onrender.com/api/interviews",
+        "https://college-6hu8.onrender.com/api/interviews",
         formData
       );
       console.log("Interview scheduled:", response.data);
