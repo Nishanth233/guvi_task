@@ -4,7 +4,14 @@ const cors = require("cors");
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://marvelous-seahorse-6342b9.netlify.app",
+    ],
+  })
+);
 app.use(express.json());
 
 // MongoDB connection
