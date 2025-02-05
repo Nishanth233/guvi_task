@@ -8,7 +8,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://marvelous-seahorse-6342b9.netlify.app",
+      "https://tangerine-puffpuff-0580f2.netlify.app",
     ],
   })
 );
