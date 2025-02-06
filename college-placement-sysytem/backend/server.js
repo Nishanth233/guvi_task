@@ -7,7 +7,6 @@ const app = express();
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
       "https://tangerine-puffpuff-0580f2.netlify.app",
     ],
   })
