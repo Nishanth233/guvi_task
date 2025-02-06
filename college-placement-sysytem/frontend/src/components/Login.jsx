@@ -25,11 +25,11 @@ const Login = ({ setUserRole }) => {
 
       // Redirect based on role
       if (role === "admin") {
-        navigate("/");
+        navigate("/home");
       } else if (role === "student") {
-        navigate("/");
+        navigate("/home");
       } else if (role === "company") {
-        navigate("/");
+        navigate("/home");
       }
     } catch (error) {
       console.error("Error logging in:", error);
