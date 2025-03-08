@@ -20,7 +20,7 @@ const SearchFlights = () => {
     }
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/airports`,
+        `https://flight-uxxl.onrender.com/api/airports`,
         { params: { keyword: query } }
       );
       setSuggestions(Array.isArray(response.data) ? response.data : []);
@@ -42,7 +42,7 @@ const SearchFlights = () => {
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/flights`,
+        `https://flight-uxxl.onrender.com/api/flights`,
         { params: { departure, arrival, date } }
       );
       setFlights(Array.isArray(response.data) ? response.data : []);

@@ -13,7 +13,7 @@ const Register = () => {
   const handleRegister = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/users/register`,
+        `https://flight-uxxl.onrender.com/api/users/register`,
         { name, email, password }
       );
       navigate("/login");

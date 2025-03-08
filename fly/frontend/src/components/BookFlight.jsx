@@ -48,7 +48,7 @@ const BookFlight = () => {
 
     try {
       const { data: clientSecret } = await axios.post(
-        `${import.meta.env.VITE_API_URL}/payment`,
+        `https://flight-uxxl.onrender.com/api/payment`,
         {
           amount: 1000, // Replace with your desired amount
           currency: "usd",
@@ -78,7 +78,7 @@ const BookFlight = () => {
 
         // Here you would send the digital wallet details to your backend for processing
         await axios.post(
-          `${import.meta.env.VITE_API_URL}/digital-wallet-payment`,
+          `https://flight-uxxl.onrender.com/api/digital-wallet-payment`,
           {
             user: getUserIdFromToken(),
             flight: id,
@@ -97,7 +97,7 @@ const BookFlight = () => {
 
         // Here you would send the bank transfer details to your backend for processing
         await axios.post(
-          `${import.meta.env.VITE_API_URL}/bank-transfer`,
+          `https://flight-uxxl.onrender.com/api/bank-transfer`,
           {
             user: getUserIdFromToken(),
             flight: id,
@@ -127,7 +127,7 @@ const BookFlight = () => {
 
         // Send a request to create the booking
         await axios.post(
-          `${import.meta.env.VITE_API_URL}/bookings`,
+          `https://flight-uxxl.onrender.com/api/bookings`,
           {
             user: userId,
             flight: id, // Use the flight ID from the URL params

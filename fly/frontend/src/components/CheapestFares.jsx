@@ -11,7 +11,9 @@ const CheapestFares = () => {
   useEffect(() => {
     const fetchFares = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/cheapest-fares");
+        const response = await axios.get(
+          "https://flight-uxxl.onrender.com/api/cheapest-fares"
+        );
         console.log('API Response:', response.data); // Log the API response to check the data
         setFares(response.data);
       } catch (err) {

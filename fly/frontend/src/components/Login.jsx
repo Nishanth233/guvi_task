@@ -12,7 +12,7 @@ const Login = ({ onLogin }) => {
   const handleLogin = async () => {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/users/login`,
+        `https://flight-uxxl.onrender.com/api/users/login`,
         { email, password }
       );
       localStorage.setItem("token", response.data.token);

@@ -13,7 +13,7 @@ const ExploreDestinations = () => {
     const fetchDestinations = async () => {
       try {
         const response = await axios.get(
-          "http://localhost:5000/api/destinations"
+          "https://flight-uxxl.onrender.com/api/destinations"
         );
         setDestinations(response.data);
         setFilteredDestinations(response.data);

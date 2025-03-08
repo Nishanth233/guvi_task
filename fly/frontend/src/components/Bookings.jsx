@@ -23,7 +23,7 @@ const Bookings = () => {
         }
 
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/bookings`,
+          `https://flight-uxxl.onrender.com/api/bookings`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -50,7 +50,7 @@ const Bookings = () => {
 
     try {
       await axios.put(
-        `${import.meta.env.VITE_API_URL}/bookings/${bookingId}`,
+        `https://flight-uxxl.onrender.com/api/bookings/${bookingId}`,
         { status: "Cancelled" },
         {
           headers: {

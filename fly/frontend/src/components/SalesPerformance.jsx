@@ -7,7 +7,7 @@ const SalesPerformance = () => {
   const fetchSalesPerformance = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/reports/sales-performance`
+        `https://flight-uxxl.onrender.com/api/reports/sales-performance`
       );
       setSalesPerformance(response.data);
     } catch (err) {

@@ -9,7 +9,7 @@ const LiveReports = () => {
   const fetchLiveReports = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/reports/live/${origin}/${destination}`
+        `https://flight-uxxl.onrender.com/api/reports/live/${origin}/${destination}`
       );
       setLiveReports(response.data);
     } catch (err) {

@@ -14,7 +14,7 @@ const UserActivity = () => {
       }
 
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/reports/user-activity`,
+        `https://flight-uxxl.onrender.com/api/reports/user-activity`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -23,7 +23,8 @@ const UserActivity = () => {
       );
 
       setUserActivity(response.data);
-    } catch (err) {
+    } catch (err)
+     {
       setError("Error fetching user activity");
     }
   };

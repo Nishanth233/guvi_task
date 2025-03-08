@@ -13,7 +13,7 @@ const FlightStatus = () => {
       try {
         console.log("Fetching data for flight number:", flightNumber); // Log the flight number
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/flights/live/${flightNumber}`
+          `https://flight-uxxl.onrender.com/api/flights/live/${flightNumber}`
         );
         console.log("API Response:", response.data); // Log the entire API response
         setFlightData(response.data);

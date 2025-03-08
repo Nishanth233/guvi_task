@@ -23,7 +23,7 @@ const Home = () => {
     }
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/cheapest-fares"
+        "https://flight-uxxl.onrender.com/api/cheapest-fares"
       );
       cache.data = response.data;
       cache.timestamp = Date.now();

@@ -21,7 +21,7 @@ const Profile = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/users/me`,
+          `https://flight-uxxl.onrender.com/api/users/me`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -67,7 +67,7 @@ const Profile = () => {
         formDataToSend.append(key, formData[key]);
       }
       const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/users/me`,
+        `https://flight-uxxl.onrender.com/api/users/me`,
         formDataToSend,
         {
           headers: {
