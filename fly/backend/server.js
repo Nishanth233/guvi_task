@@ -24,6 +24,7 @@ app.use(
     origin: [
       "http://localhost:5173",
       "https://incomparable-wisp-262a4a.netlify.app",
+      "https://vermillion-arithmetic-7dfaec.netlify.app",
     ],
   })
 );
