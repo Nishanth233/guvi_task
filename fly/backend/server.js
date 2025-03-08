@@ -23,8 +23,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-      "https://incomparable-wisp-262a4a.netlify.app",
-      "https://vermillion-arithmetic-7dfaec.netlify.app",
+      "https://heartfelt-entremet-0b689b.netlify.app",
     ],
   })
 );
