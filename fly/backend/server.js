@@ -19,7 +19,14 @@ const app = express();
 
 // Middleware
 app.use(bodyParser.json());
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://incomparable-wisp-262a4a.netlify.app",
+    ],
+  })
+);
 
 // MongoDB connection
 mongoose
