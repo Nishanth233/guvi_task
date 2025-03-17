@@ -55,7 +55,9 @@ router.post("/", authMiddleware, async (req, res) => {
   const { flight, seatsBooked, totalPrice } = req.body;
 
   try {
-    console.log("[INFO] Creating a new booking...");
+    console.log("[INFO] Booking request body:", req.body);
+    console.log("[INFO] User ID from token:", req.user.id);
+
     const newBooking = new Booking({
       user: req.user.id,
       flight,
@@ -65,7 +67,6 @@ router.post("/", authMiddleware, async (req, res) => {
     });
 
     await newBooking.save();
-
     console.log("[INFO] Booking created successfully:", newBooking);
 
     // Send booking confirmation email
