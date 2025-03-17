@@ -1,35 +1,52 @@
 const express = require("express");
 const router = express.Router();
+const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
 const sendBookingConfirmation = require("../utils/sendBookingConfirmation");
 const jwt = require("jsonwebtoken");
 
-// Middleware to verify the token
+// Middleware: Validate booking request
+const validateBookingRequest = (req, res, next) => {
+  const { flight, seatsBooked, totalPrice } = req.body;
+  if (!flight || !seatsBooked || !totalPrice) {
+    return res.status(400).json({
+      message: "Missing required fields: flight, seatsBooked, totalPrice",
+    });
+  }
+  if (typeof seatsBooked !== "number" || typeof totalPrice !== "number") {
+    return res
+      .status(400)
+      .json({ message: "Invalid data types for seatsBooked or totalPrice." });
+  }
+  next();
+};
+
+// Middleware: Authentication (JWT validation)
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
-
   if (!authHeader) {
     console.error("[ERROR] Authorization header is missing.");
-    return res
-      .status(401)
-      .json({ message: "Authorization header is missing." });
+    return res.status(401).json({ message: "Authorization header is missing" });
   }
 
   const token = authHeader.split(" ")[1];
+  if (!token) {
+    console.error("[ERROR] No token provided.");
+    return res.status(401).json({ message: "No token provided" });
+  }
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
+    req.user = decoded.user;
+    console.log("[INFO] User authenticated:", req.user);
     next();
-  } catch (error) {
-    console.error("[ERROR] Invalid token:", error.message);
-    return res
-      .status(401)
-      .json({ message: "Unauthorized: Invalid or expired token." });
+  } catch (err) {
+    console.error("[ERROR] Token verification failed:", err.message);
+    return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
 
-// Fetch all bookings for a specific user
+// Route: Fetch all bookings for a specific user
 router.get("/", authMiddleware, async (req, res) => {
   try {
     console.log("[INFO] Fetching bookings for user:", req.user.id);
@@ -43,24 +60,25 @@ router.get("/", authMiddleware, async (req, res) => {
     console.log("[INFO] Fetched bookings:", bookings);
     res.json(bookings);
   } catch (err) {
-    console.error("[ERROR] Failed to fetch bookings:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to fetch bookings. Please try again later." });
+    console.error("[ERROR] Failed to fetch bookings:", err.message);
+    res.status(500).json({ message: "Failed to fetch bookings." });
   }
 });
 
-// Create a new booking
-router.post("/", authMiddleware, async (req, res) => {
+// Route: Create a new booking
+router.post("/", authMiddleware, validateBookingRequest, async (req, res) => {
   const { flight, seatsBooked, totalPrice } = req.body;
 
   try {
-    console.log("[INFO] Booking request body:", req.body);
-    console.log("[INFO] User ID from token:", req.user.id);
+    console.log("[INFO] Creating a new booking...");
+    // Validate and cast flight to ObjectId
+    if (!mongoose.Types.ObjectId.isValid(flight)) {
+      return res.status(400).json({ message: "Invalid flight ID format." });
+    }
 
     const newBooking = new Booking({
       user: req.user.id,
-      flight,
+      flight: mongoose.Types.ObjectId(flight), // Cast flight to ObjectId
       seatsBooked,
       totalPrice,
       status: "Confirmed",
@@ -76,22 +94,21 @@ router.post("/", authMiddleware, async (req, res) => {
     } catch (emailError) {
       console.error(
         "[ERROR] Failed to send booking confirmation email:",
-        emailError
+        emailError.message
       );
     }
 
-    res
-      .status(201)
-      .json({ message: "Booking created successfully", booking: newBooking });
+    res.status(201).json({
+      message: "Booking created successfully",
+      booking: newBooking,
+    });
   } catch (err) {
-    console.error("[ERROR] Failed to create booking:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to create booking. Please try again later." });
+    console.error("[ERROR] Failed to create booking:", err.message);
+    res.status(500).json({ message: "Failed to create booking." });
   }
 });
 
-// Cancel a booking
+// Route: Cancel a booking
 router.put("/:id", authMiddleware, async (req, res) => {
   try {
     const bookingId = req.params.id;
@@ -111,10 +128,8 @@ router.put("/:id", authMiddleware, async (req, res) => {
       res.status(404).json({ message: "Booking not found" });
     }
   } catch (err) {
-    console.error("[ERROR] Failed to cancel booking:", err);
-    res
-      .status(500)
-      .json({ message: "Failed to cancel booking. Please try again later." });
+    console.error("[ERROR] Failed to cancel booking:", err.message);
+    res.status(500).json({ message: "Failed to cancel booking." });
   }
 });
 
