@@ -6,15 +6,18 @@ const cors = require("cors");
 const nodemailer = require("nodemailer");
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 const Amadeus = require("amadeus");
-const path = require("path"); // Add path module
+const path = require("path");
+
+// Import routes
 const flightRoutes = require("./routes/flights");
 const bookingRoutes = require("./routes/bookings");
 const userRoutes = require("./routes/users");
 const airportRoutes = require("./routes/airports");
 const reportRoutes = require("./routes/reports");
-const cheapestFaresRoutes = require('./routes/cheapestFares');
+const cheapestFaresRoutes = require("./routes/cheapestFares");
 const destinationsRouter = require("./routes/destinations");
 const paymentRoutes = require("./routes/payment");
+
 const app = express();
 
 // Middleware
@@ -25,8 +28,11 @@ app.use(
       "http://localhost:5173",
       "https://heartfelt-entremet-0b689b.netlify.app",
     ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+app.use(express.json());
 
 // MongoDB connection
 mongoose
@@ -34,11 +40,11 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
-  .then(() => console.log("MongoDB connected"))
-  .catch((err) => console.log(err));
+  .then(() => console.log("[INFO] MongoDB connected"))
+  .catch((err) => console.error("[ERROR] MongoDB connection failed:", err));
 
 // Nodemailer setup
-let transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
@@ -46,37 +52,41 @@ let transporter = nodemailer.createTransport({
   },
 });
 
-// Serve static files from the 'uploads' directory
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve static files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Stripe payment route
 app.post("/api/payment", async (req, res) => {
   const { amount, currency } = req.body;
   try {
+    console.log(`[INFO] Initiating payment: Amount - ${amount}, Currency - ${currency}`);
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
     });
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("[ERROR] Failed to create PaymentIntent:", error.message);
+    res.status(500).json({ error: "Payment processing failed." });
   }
 });
 
 // Nodemailer email route
 app.post("/api/send-email", async (req, res) => {
   const { to, subject, text } = req.body;
-  let mailOptions = {
+  const mailOptions = {
     from: process.env.EMAIL_USER,
     to,
     subject,
     text,
   };
   try {
+    console.log(`[INFO] Sending email to ${to}`);
     await transporter.sendMail(mailOptions);
     res.json({ message: "Email sent successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error("[ERROR] Failed to send email:", error.message);
+    res.status(500).json({ error: "Failed to send email." });
   }
 });
 
@@ -86,27 +96,27 @@ const amadeus = new Amadeus({
   clientSecret: process.env.AMADEUS_CLIENT_SECRET,
 });
 
-// Routes
+// Define routes
 app.use("/api/flights", flightRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/airports", airportRoutes);
 app.use("/api/reports", reportRoutes);
-app.use('/api/cheapest-fares', cheapestFaresRoutes);
+app.use("/api/cheapest-fares", cheapestFaresRoutes);
 app.use("/api/destinations", destinationsRouter);
-app.use('/api', paymentRoutes);
+app.use("/api", paymentRoutes);
 
-// Default route for the root URL
+// Default route
 app.get("/", (req, res) => {
   res.send("Welcome to the Flight Management System!");
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send("Something went wrong!");
+  console.error("[ERROR]", err.stack);
+  res.status(500).json({ error: "Something went wrong.", details: err.message });
 });
 
-// Start server
+// Start the server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`[INFO] Server running on port ${PORT}`));

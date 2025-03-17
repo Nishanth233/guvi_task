@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
-import { getUserIdFromToken } from "../utils/auth"; // Import utility function to get user ID
+import { getUserIdFromToken } from "../utils/auth"; // Utility function to get user ID
 import Footer from "./Footer";
 
 const BookFlight = () => {
@@ -11,10 +11,10 @@ const BookFlight = () => {
   const elements = useElements();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [accountNumber, setAccountNumber] = useState(""); // New state for bank account number
-  const [bankName, setBankName] = useState(""); // New state for bank name
-  const [walletDetails, setWalletDetails] = useState(""); // New state for digital wallet details
-  const [paymentMethod, setPaymentMethod] = useState("card"); // Add state for payment method
+  const [accountNumber, setAccountNumber] = useState(""); // Bank account number
+  const [bankName, setBankName] = useState(""); // Bank name
+  const [walletDetails, setWalletDetails] = useState(""); // Digital wallet details
+  const [paymentMethod, setPaymentMethod] = useState("card"); // Default to card payment
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [loading, setLoading] = useState(false);
@@ -26,18 +26,23 @@ const BookFlight = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    // Basic validations for required fields
+    console.log("[INFO] Form submitted for payment.");
+
+    // Basic validations
     if (!name || !email) {
+      console.error("[ERROR] Validation failed: Name or email missing.");
       setError("Please enter your name and email.");
       return;
     }
 
     if (paymentMethod === "bank_transfer" && (!accountNumber || !bankName)) {
+      console.error("[ERROR] Validation failed: Bank details missing.");
       setError("Please enter your bank account number and bank name.");
       return;
     }
 
     if (paymentMethod === "digital_wallet" && !walletDetails) {
+      console.error("[ERROR] Validation failed: Wallet details missing.");
       setError("Please enter your wallet details.");
       return;
     }
@@ -47,43 +52,48 @@ const BookFlight = () => {
     setSuccess("");
 
     try {
-      const { data: clientSecret } = await axios.post(
+      console.log("[INFO] Fetching clientSecret from backend...");
+      const { data } = await axios.post(
         `https://flight-uxxl.onrender.com/api/payment`,
-        {
-          amount: 1000, // Replace with your desired amount
-          currency: "usd",
-        }
+        { amount: 1000, currency: "usd" }
       );
+      const clientSecret = data.clientSecret; // Extract clientSecret string
+      console.log(`[INFO] Received clientSecret from backend: ${clientSecret}`);
 
       let paymentResult;
 
       if (paymentMethod === "card") {
+        console.log("[INFO] Starting card payment process...");
         const cardElement = elements.getElement(CardElement);
+
         const { error, paymentIntent } = await stripe.confirmCardPayment(
           clientSecret,
           {
             payment_method: {
               card: cardElement,
               billing_details: {
-                name: name,
-                email: email,
+                name,
+                email,
               },
             },
           }
         );
         paymentResult = { error, paymentIntent };
-      } else if (paymentMethod === "digital_wallet") {
-        // Handle digital wallet payment
-        paymentResult = { paymentIntent: { status: "succeeded" } }; // Simulated success for placeholder
 
-        // Here you would send the digital wallet details to your backend for processing
+        console.log(
+          error
+            ? `[ERROR] Card payment failed: ${error.message}`
+            : `[INFO] Card payment succeeded: PaymentIntent ID - ${paymentIntent.id}, Status - ${paymentIntent.status}`
+        );
+      } else if (paymentMethod === "digital_wallet") {
+        console.log("[INFO] Initiating digital wallet payment...");
         await axios.post(
           `https://flight-uxxl.onrender.com/api/digital-wallet-payment`,
           {
             user: getUserIdFromToken(),
             flight: id,
             amount: 1000,
-            walletDetails, // Include digital wallet details
+            walletDetails,
           },
           {
             headers: {
@@ -91,19 +101,19 @@ const BookFlight = () => {
             },
           }
         );
-      } else if (paymentMethod === "bank_transfer") {
-        // Handle bank transfer payment
-        paymentResult = { paymentIntent: { status: "succeeded" } }; // Simulated success for placeholder
 
-        // Here you would send the bank transfer details to your backend for processing
+        console.log("[INFO] Digital wallet payment simulated as successful.");
+        paymentResult = { paymentIntent: { status: "succeeded" } };
+      } else if (paymentMethod === "bank_transfer") {
+        console.log("[INFO] Initiating bank transfer payment...");
         await axios.post(
           `https://flight-uxxl.onrender.com/api/bank-transfer`,
           {
             user: getUserIdFromToken(),
             flight: id,
             amount: 1000,
-            accountNumber, // Include bank account number
-            bankName, // Include bank name
+            accountNumber,
+            bankName,
           },
           {
             headers: {
@@ -111,28 +121,37 @@ const BookFlight = () => {
             },
           }
         );
+
+        console.log("[INFO] Bank transfer payment simulated as successful.");
+        paymentResult = { paymentIntent: { status: "succeeded" } };
       }
 
       const { error, paymentIntent } = paymentResult;
 
       if (error) {
+        console.error(`[ERROR] Payment failed: ${error.message}`);
         setError(error.message);
       } else if (paymentIntent.status === "succeeded") {
+        console.log(
+          "[INFO] Payment succeeded. Proceeding to create booking..."
+        );
+
         const userId = getUserIdFromToken();
         if (!userId) {
+          console.error("[ERROR] User ID not found in token.");
           setError("User ID not found");
           setLoading(false);
           return;
         }
 
-        // Send a request to create the booking
+        // Send booking creation request
         await axios.post(
           `https://flight-uxxl.onrender.com/api/bookings`,
           {
             user: userId,
-            flight: id, // Use the flight ID from the URL params
+            flight: id,
             seatsBooked: 1,
-            totalPrice: 1000, // Replace with your desired amount
+            totalPrice: 1000,
             status: "Confirmed",
           },
           {
@@ -142,9 +161,11 @@ const BookFlight = () => {
           }
         );
 
+        console.log("[INFO] Booking created successfully.");
         setSuccess("Payment and booking succeeded!");
       }
     } catch (err) {
+      console.error(`[ERROR] Unexpected error during payment: ${err.message}`);
       setError("Payment failed. Please try again.");
     } finally {
       setLoading(false);
@@ -287,3 +308,4 @@ const BookFlight = () => {
 };
 
 export default BookFlight;
+
