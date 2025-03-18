@@ -26,24 +26,46 @@ router.get("/", async (req, res) => {
 
     if (response.data) {
       console.log("Flights found:", response.data);
-      const flights = response.data.map((flight) => ({
-        id: new mongoose.Types.ObjectId(),
-        flightNumber:
-          flight.itineraries[0].segments[0].carrierCode +
-          flight.itineraries[0].segments[0].number,
-        departureLocation: departure,
-        departureCode: departure,
-        departureTime: flight.itineraries[0].segments[0].departure.at,
-        arrivalLocation: arrival,
-        arrivalCode: arrival,
-        arrivalTime: flight.itineraries[0].segments[0].arrival.at,
-        price: {
-          currency: flight.price.currency,
-          total: flight.price.total,
-        },
-      }));
 
-      res.json(flights); // Send flights with valid IDs
+      const flights = await Promise.all(
+        response.data.map(async (flight) => {
+          const flightNumber =
+            flight.itineraries[0].segments[0].carrierCode +
+            flight.itineraries[0].segments[0].number;
+
+          // Check if flight already exists in the database
+          let existingFlight = await Flight.findOne({
+            flightNumber,
+            departureTime: flight.itineraries[0].segments[0].departure.at,
+          });
+
+          if (!existingFlight) {
+            // Save new flight to the database
+            const newFlight = new Flight({
+              flightNumber,
+              departureLocation: departure,
+              departureCode: departure,
+              departureTime: flight.itineraries[0].segments[0].departure.at,
+              arrivalLocation: arrival,
+              arrivalCode: arrival,
+              arrivalTime: flight.itineraries[0].segments[0].arrival.at,
+              price: {
+                currency: flight.price.currency,
+                total: flight.price.total,
+              },
+            });
+
+            existingFlight = await newFlight.save(); // Save flight and use the saved data
+            console.log("[INFO] New flight saved:", existingFlight);
+          } else {
+            console.log("[INFO] Flight already exists:", existingFlight);
+          }
+
+          return existingFlight; // Return the existing or new flight
+        })
+      );
+
+      res.json(flights); // Send flights from the database
     } else {
       console.log("No flights found");
       res.json([]);
