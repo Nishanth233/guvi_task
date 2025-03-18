@@ -80,8 +80,10 @@ const Bookings = () => {
       [
         `Booking Reference: ${booking._id}\nFlight: ${
           booking.flight?.flightNumber || "N/A"
-        }\nDeparture: ${booking.flight?.departure || "N/A"}\nArrival: ${
-          booking.flight?.arrival || "N/A"
+        }\nDeparture: ${booking.flight?.departureLocation || "N/A"} at ${
+          booking.flight?.departureTime || "N/A"
+        }\nArrival: ${booking.flight?.arrivalLocation || "N/A"} at ${
+          booking.flight?.arrivalTime || "N/A"
         }\nStatus: ${booking.status}`,
       ],
       { type: "text/plain" }
@@ -95,7 +97,9 @@ const Bookings = () => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-screen bg-orange-400">
-        <h2 className="text-xl font-bold text-white">Loading your bookings...</h2>
+        <h2 className="text-xl font-bold text-white">
+          Loading your bookings...
+        </h2>
       </div>
     );
   }
@@ -107,11 +111,33 @@ const Bookings = () => {
         <ul className="w-full max-w-md">
           {Array.isArray(bookings) && bookings.length > 0 ? (
             bookings.map((booking) => (
-              <li key={booking._id} className="mb-4 p-4 bg-white rounded shadow">
-                <p>Flight: {booking.flight?.flightNumber || "N/A"}</p>
-                <p>Departure: {booking.flight?.departure || "N/A"}</p>
-                <p>Arrival: {booking.flight?.arrival || "N/A"}</p>
-                <p>Status: {booking.status || "N/A"}</p>
+              <li
+                key={booking._id}
+                className="mb-4 p-4 bg-white rounded shadow"
+              >
+                <p>
+                  <strong>Flight:</strong>{" "}
+                  {booking.flight?.flightNumber || "N/A"}
+                </p>
+                <p>
+                  <strong>Departure:</strong>{" "}
+                  {booking.flight?.departureLocation || "N/A"} (
+                  {booking.flight?.departureCode || "N/A"}) at{" "}
+                  {booking.flight?.departureTime
+                    ? new Date(booking.flight.departureTime).toLocaleString()
+                    : "N/A"}
+                </p>
+                <p>
+                  <strong>Arrival:</strong>{" "}
+                  {booking.flight?.arrivalLocation || "N/A"} (
+                  {booking.flight?.arrivalCode || "N/A"}) at{" "}
+                  {booking.flight?.arrivalTime
+                    ? new Date(booking.flight.arrivalTime).toLocaleString()
+                    : "N/A"}
+                </p>
+                <p>
+                  <strong>Status:</strong> {booking.status || "N/A"}
+                </p>
                 {booking.status !== "Cancelled" && (
                   <button
                     onClick={() => handleCancelBooking(booking._id)}
@@ -120,7 +146,7 @@ const Bookings = () => {
                     Cancel Booking
                   </button>
                 )}
-                               <button
+                <button
                   onClick={() => handleDownloadConfirmation(booking)}
                   className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 ml-2"
                 >
