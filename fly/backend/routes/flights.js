@@ -27,7 +27,7 @@ router.get("/", async (req, res) => {
     if (response.data) {
       console.log("Flights found:", response.data);
       const flights = response.data.map((flight) => ({
-        id: mongoose.Types.ObjectId(), // Generate a unique valid MongoDB ObjectId
+        id: new mongoose.Types.ObjectId(),
         flightNumber:
           flight.itineraries[0].segments[0].carrierCode +
           flight.itineraries[0].segments[0].number,
