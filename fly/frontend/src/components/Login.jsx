@@ -1,62 +1,25 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Footer from "./Footer";
-import jwt_decode from "jwt-decode";
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      navigate("/"); // Redirect if already logged in
-    }
-  }, [navigate]);
-
   const handleLogin = async () => {
-    if (!email || !password) {
-      setError("Email and password cannot be empty.");
-      return;
-    }
-
-    setLoading(true);
-
     try {
       const response = await axios.post(
         `https://flight-uxxl.onrender.com/api/users/login`,
         { email, password }
       );
-
-      const token = response.data.token;
-
-      // Decode token to check expiration
-      const decodedToken = jwt_decode(token);
-      const currentTime = Math.floor(Date.now() / 1000);
-      if (decodedToken.exp < currentTime) {
-        setError("Token has expired. Please log in again.");
-        return;
-      }
-
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", response.data.token);
       onLogin();
       navigate("/");
     } catch (err) {
-      if (err.response && err.response.status === 401) {
-        setError("Invalid credentials. Please check your email and password.");
-      } else if (err.response) {
-        setError(
-          `Server error: ${err.response.data.message || "Try again later."}`
-        );
-      } else {
-        setError("Network error. Please check your internet connection.");
-      }
-    } finally {
-      setLoading(false);
+      setError("Invalid credentials. Please try again.");
     }
   };
 
@@ -84,14 +47,9 @@ const Login = ({ onLogin }) => {
           />
           <button
             onClick={handleLogin}
-            disabled={loading}
-            className={`w-full py-2 ${
-              loading
-                ? "bg-gray-400 cursor-not-allowed"
-                : "bg-green-500 hover:bg-green-700"
-            } text-white font-bold rounded-lg transition duration-300 ease-in-out`}
+            className="w-full py-2 bg-green-500 text-white font-bold rounded-lg hover:bg-green-700 transition duration-300 ease-in-out"
           >
-            {loading ? "Logging in..." : "Login"}
+            Login
           </button>
         </div>
       </div>
