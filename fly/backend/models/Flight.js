@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const flightSchema = new mongoose.Schema({
   flightNumber: { type: String, required: true },
   departureLocation: { type: String, required: true },
@@ -12,8 +13,8 @@ const flightSchema = new mongoose.Schema({
   },
 });
 
-flightSchema.post('find', function (result) {
-  console.log('Flight data structure:', result);
+flightSchema.post("find", function (result) {
+  console.log("Flight data structure:", result);
 });
 
-module.exports = mongoose.model('Flight', flightSchema);
+module.exports = mongoose.model("Flight", flightSchema);
