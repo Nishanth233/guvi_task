@@ -8,7 +8,7 @@ const jwt = require("jsonwebtoken");
 // Middleware: Validate booking request
 const validateBookingRequest = (req, res, next) => {
   const { flight, seatsBooked, totalPrice } = req.body;
-
+console.log("[DEBUG] Incoming booking request payload:", req.body);
   if (!flight || !seatsBooked || !totalPrice) {
     return res.status(400).json({
       message: "Missing required fields: flight, seatsBooked, totalPrice",
@@ -29,6 +29,7 @@ const validateBookingRequest = (req, res, next) => {
 
   // Validate flight ID as a valid ObjectId
   if (!mongoose.Types.ObjectId.isValid(flight)) {
+    console.log("[ERROR] Invalid flight ID:", flight);
     return res.status(400).json({ message: "Invalid flight ID format." });
   }
 

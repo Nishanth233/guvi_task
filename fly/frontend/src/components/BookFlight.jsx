@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import axios from "axios";
-import { getUserIdFromToken } from "../utils/auth"; // Utility function to get user ID
+import { getUserIdFromToken } from "../utils/auth"; // Utility function to extract user ID
 import Footer from "./Footer";
 
 const BookFlight = () => {
-  const { id } = useParams();
+  const { id } = useParams(); // Flight ID from URL parameters
   const stripe = useStripe();
   const elements = useElements();
   const [name, setName] = useState("");
@@ -28,9 +28,9 @@ const BookFlight = () => {
 
     console.log("[INFO] Form submitted for payment.");
 
-    // Basic validations
+    // Basic field validations
     if (!name || !email) {
-      console.error("[ERROR] Validation failed: Name or email missing.");
+      console.error("[ERROR] Missing name or email.");
       setError("Please enter your name and email.");
       return;
     }
@@ -46,7 +46,30 @@ const BookFlight = () => {
       setError("Please enter your wallet details.");
       return;
     }
+ // Add these checks to validate the booking data
+  if (!id || typeof id !== "string") {
+    console.error("[ERROR] Invalid flight ID:", id);
+    setError("Invalid flight ID.");
+    return;
+  }
 
+  if (!Number.isInteger(1) || 1 <= 0) { // seatsBooked is hardcoded to 1
+    console.error("[ERROR] Invalid seatsBooked value:", 1);
+    setError("Seats booked must be a positive integer.");
+    return;
+  }
+
+  if (typeof 1000 !== "number" || 1000 <= 0) { // totalPrice is hardcoded
+    console.error("[ERROR] Invalid totalPrice value:", 1000);
+    setError("Total price must be a positive number.");
+    return;
+  }
+  if (!id || id.length !== 24) {
+    // MongoDB ObjectIds are always 24 characters long
+    console.error("[ERROR] Invalid flight ID:", id);
+    setError("Invalid flight ID. Please contact support.");
+    return;
+  }
     setLoading(true);
     setError("");
     setSuccess("");
@@ -57,13 +80,13 @@ const BookFlight = () => {
         `https://flight-uxxl.onrender.com/api/payment`,
         { amount: 1000, currency: "usd" }
       );
-      const clientSecret = data.clientSecret; // Extract clientSecret string
-      console.log(`[INFO] Received clientSecret from backend: ${clientSecret}`);
+      const clientSecret = data.clientSecret;
+      console.log(`[INFO] Received clientSecret: ${clientSecret}`);
 
       let paymentResult;
 
       if (paymentMethod === "card") {
-        console.log("[INFO] Starting card payment process...");
+        console.log("[INFO] Initiating card payment...");
         const cardElement = elements.getElement(CardElement);
 
         const { error, paymentIntent } = await stripe.confirmCardPayment(
@@ -80,93 +103,65 @@ const BookFlight = () => {
         );
         paymentResult = { error, paymentIntent };
 
-        console.log(
-          error
-            ? `[ERROR] Card payment failed: ${error.message}`
-            : `[INFO] Card payment succeeded: PaymentIntent ID - ${paymentIntent.id}, Status - ${paymentIntent.status}`
-        );
-      } else if (paymentMethod === "digital_wallet") {
-        console.log("[INFO] Initiating digital wallet payment...");
-        await axios.post(
-          `https://flight-uxxl.onrender.com/api/digital-wallet-payment`,
-          {
-            user: getUserIdFromToken(),
-            flight: id,
-            amount: 1000,
-            walletDetails,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
-        console.log("[INFO] Digital wallet payment simulated as successful.");
-        paymentResult = { paymentIntent: { status: "succeeded" } };
-      } else if (paymentMethod === "bank_transfer") {
-        console.log("[INFO] Initiating bank transfer payment...");
-        await axios.post(
-          `https://flight-uxxl.onrender.com/api/bank-transfer`,
-          {
-            user: getUserIdFromToken(),
-            flight: id,
-            amount: 1000,
-            accountNumber,
-            bankName,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
-
-        console.log("[INFO] Bank transfer payment simulated as successful.");
-        paymentResult = { paymentIntent: { status: "succeeded" } };
-      }
-
-      const { error, paymentIntent } = paymentResult;
-
-      if (error) {
-        console.error(`[ERROR] Payment failed: ${error.message}`);
-        setError(error.message);
-      } else if (paymentIntent.status === "succeeded") {
-        console.log(
-          "[INFO] Payment succeeded. Proceeding to create booking..."
-        );
-
-        const userId = getUserIdFromToken();
-        if (!userId) {
-          console.error("[ERROR] User ID not found in token.");
-          setError("User ID not found");
-          setLoading(false);
+        if (error) {
+          console.error(`[ERROR] Card payment failed: ${error.message}`);
+          setError(error.message);
           return;
         }
 
-        // Send booking creation request
+        console.log(
+          `[INFO] Card payment succeeded: PaymentIntent ID - ${paymentIntent.id}`
+        );
+      }
+
+      if (paymentMethod === "digital_wallet" || paymentMethod === "bank_transfer") {
+        console.log(`[INFO] Simulating ${paymentMethod} payment...`);
         await axios.post(
-          "https://flight-uxxl.onrender.com/api/bookings",
+          `https://flight-uxxl.onrender.com/api/${paymentMethod}-payment`,
           {
+            user: getUserIdFromToken(),
             flight: id,
-            seatsBooked: 1,
-            totalPrice: 1000,
-            status: "Confirmed",
+            amount: 1000,
           },
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`, // Include token
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+        paymentResult = { paymentIntent: { status: "succeeded" } };
+        console.log(`[INFO] ${paymentMethod} payment succeeded.`);
+      }
+
+      const { paymentIntent } = paymentResult;
+      if (paymentIntent.status === "succeeded") {
+        console.log("[INFO] Payment successful. Creating booking...");
+
+        const bookingPayload = {
+          flight: id,
+          seatsBooked: 1,
+          totalPrice: 1000,
+          status: "Confirmed",
+        };
+
+        console.log("[DEBUG] Booking payload:", bookingPayload);
+
+        const bookingResponse = await axios.post(
+          "https://flight-uxxl.onrender.com/api/bookings",
+          bookingPayload,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
           }
         );
 
-
-        console.log("[INFO] Booking created successfully.");
+        console.log("[INFO] Booking created successfully.", bookingResponse.data);
         setSuccess("Payment and booking succeeded!");
       }
     } catch (err) {
-      console.error(`[ERROR] Unexpected error during payment: ${err.message}`);
-      setError("Payment failed. Please try again.");
+      console.error(`[ERROR] An error occurred: ${err.message}`);
+      setError("Payment or booking failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -183,9 +178,7 @@ const BookFlight = () => {
           {success && <p className="text-green-500 mb-4">{success}</p>}
           <form onSubmit={handleSubmit} className="w-full">
             <div className="mb-4">
-              <label className="block text-gray-700 font-bold mb-2">
-                Name:
-              </label>
+              <label className="block text-gray-700 font-bold mb-2">Name:</label>
               <input
                 type="text"
                 placeholder="Name"
@@ -195,9 +188,7 @@ const BookFlight = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 font-bold mb-2">
-                Email:
-              </label>
+              <label className="block text-gray-700 font-bold mb-2">Email:</label>
               <input
                 type="email"
                 placeholder="Email"
@@ -207,9 +198,7 @@ const BookFlight = () => {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 font-bold mb-2">
-                Payment Method:
-              </label>
+              <label className="block text-gray-700 font-bold mb-2">Payment Method:</label>
               <select
                 value={paymentMethod}
                 onChange={handlePaymentMethodChange}
@@ -222,9 +211,7 @@ const BookFlight = () => {
             </div>
             {paymentMethod === "card" && (
               <div className="mb-6">
-                <label className="block text-gray-700 font-bold mb-2">
-                  Card Details:
-                </label>
+                <label className="block text-gray-700 font-bold mb-2">Card Details:</label>
                 <div className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                   <CardElement />
                 </div>
@@ -232,9 +219,7 @@ const BookFlight = () => {
             )}
             {paymentMethod === "digital_wallet" && (
               <div className="mb-6">
-                <label className="block text-gray-700 font-bold mb-2">
-                  Wallet Details:
-                </label>
+                <label className="block text-gray-700 font-bold mb-2">Wallet Details:</label>
                 <input
                   type="text"
                   placeholder="Wallet Details"
@@ -246,9 +231,7 @@ const BookFlight = () => {
             )}
             {paymentMethod === "bank_transfer" && (
               <div className="mb-6">
-                <label className="block text-gray-700 font-bold mb-2">
-                  Account Number:
-                </label>
+                <label className="block text-gray-700 font-bold mb-2">Account Number:</label>
                 <input
                   type="text"
                   placeholder="Account Number"
@@ -256,9 +239,7 @@ const BookFlight = () => {
                   onChange={(e) => setAccountNumber(e.target.value)}
                   className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                 />
-                <label className="block text-gray-700 font-bold mb-2 mt-4">
-                  Bank Name:
-                </label>
+                <label className="block text-gray-700 font-bold mb-2 mt-4">Bank Name:</label>
                 <input
                   type="text"
                   placeholder="Bank Name"
@@ -308,4 +289,3 @@ const BookFlight = () => {
 };
 
 export default BookFlight;
-
