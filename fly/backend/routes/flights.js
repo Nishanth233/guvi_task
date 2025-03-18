@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Amadeus = require("amadeus");
 const axios = require("axios");
+const mongoose = require("mongoose"); // Import mongoose for ObjectId generation
 const Flight = require("../models/Flight");
 
 const amadeus = new Amadeus({
@@ -26,7 +27,7 @@ router.get("/", async (req, res) => {
     if (response.data) {
       console.log("Flights found:", response.data);
       const flights = response.data.map((flight) => ({
-        id: flight.id,
+        id: mongoose.Types.ObjectId(), // Generate a unique valid MongoDB ObjectId
         flightNumber:
           flight.itineraries[0].segments[0].carrierCode +
           flight.itineraries[0].segments[0].number,
@@ -42,7 +43,7 @@ router.get("/", async (req, res) => {
         },
       }));
 
-      res.json(flights);
+      res.json(flights); // Send flights with valid IDs
     } else {
       console.log("No flights found");
       res.json([]);

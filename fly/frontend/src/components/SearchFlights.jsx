@@ -46,7 +46,9 @@ const SearchFlights = () => {
         { params: { departure, arrival, date } }
       );
       setFlights(Array.isArray(response.data) ? response.data : []);
+      console.log("[DEBUG] Flights retrieved:", response.data); // Debugging log for flights
     } catch (err) {
+      console.error("[ERROR] Fetching flights failed:", err.message);
       setFlights([]);
     }
   };
@@ -168,6 +170,9 @@ const SearchFlights = () => {
                   <Link
                     to={`/book/${flight.id}`}
                     className="inline-block mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+                    onClick={() =>
+                      console.log("[DEBUG] Selected flight ID:", flight.id)
+                    } // Debugging log added here
                   >
                     Book
                   </Link>
