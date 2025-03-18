@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
-const Flight = require("../models/Flight"); // Import Flight model
+const Flight = require("../models/Flight");
 const sendBookingConfirmation = require("../utils/sendBookingConfirmation");
 const jwt = require("jsonwebtoken");
 
@@ -55,13 +55,12 @@ const authMiddleware = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Updated to handle flat token structure with `id` directly
     if (!decoded || !decoded.id) {
       console.error("[ERROR] Invalid token structure:", decoded);
       return res.status(401).json({ message: "Invalid token structure" });
     }
 
-    req.user = { id: decoded.id }; // Attach `id` directly to req.user
+    req.user = { id: decoded.id };
     console.log("[INFO] User authenticated:", req.user);
     next();
   } catch (err) {
@@ -82,7 +81,10 @@ router.get("/", authMiddleware, async (req, res) => {
   try {
     console.log("[INFO] Fetching bookings for user:", req.user.id);
 
-    const bookings = await Booking.find({ user: req.user.id });
+    // Populate flight details when fetching bookings
+    const bookings = await Booking.find({ user: req.user.id }).populate(
+      "flight"
+    );
 
     if (!bookings.length) {
       console.log("[INFO] No bookings found for user:", req.user.id);
@@ -111,8 +113,8 @@ router.post("/", authMiddleware, validateBookingRequest, async (req, res) => {
     console.log("[INFO] Creating a new booking...");
 
     const newBooking = new Booking({
-      user: req.user.id, // User ID from token
-      flight: new mongoose.Types.ObjectId(flight), // Cast flight to ObjectId
+      user: req.user.id,
+      flight: new mongoose.Types.ObjectId(flight),
       seatsBooked,
       totalPrice,
       status: "Confirmed",
@@ -152,7 +154,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
       bookingId,
       { status: "Cancelled" },
       { new: true }
-    );
+    ).populate("flight"); // Populate flight details after cancellation
 
     if (booking) {
       console.log("[INFO] Booking canceled successfully:", booking);
