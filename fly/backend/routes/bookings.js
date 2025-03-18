@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
-const Flight = require("../models/Flight");
+const Flight = require("../models/Flight"); // Import Flight model
 const sendBookingConfirmation = require("../utils/sendBookingConfirmation");
 const jwt = require("jsonwebtoken");
 
@@ -82,9 +82,11 @@ router.get("/", authMiddleware, async (req, res) => {
     console.log("[INFO] Fetching bookings for user:", req.user.id);
 
     // Populate flight details when fetching bookings
-    const bookings = await Booking.find({ user: req.user.id }).populate(
-      "flight"
-    );
+    const bookings = await Booking.find({ user: req.user.id }).populate({
+      path: "flight",
+      select:
+        "flightNumber departureLocation departureCode departureTime arrivalLocation arrivalCode arrivalTime price",
+    });
 
     if (!bookings.length) {
       console.log("[INFO] No bookings found for user:", req.user.id);
@@ -154,7 +156,11 @@ router.put("/:id", authMiddleware, async (req, res) => {
       bookingId,
       { status: "Cancelled" },
       { new: true }
-    ).populate("flight"); // Populate flight details after cancellation
+    ).populate({
+      path: "flight",
+      select:
+        "flightNumber departureLocation departureCode departureTime arrivalLocation arrivalCode arrivalTime price",
+    }); // Populate flight details after cancellation
 
     if (booking) {
       console.log("[INFO] Booking canceled successfully:", booking);
