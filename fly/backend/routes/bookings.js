@@ -2,13 +2,14 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const Booking = require("../models/Booking");
+const Flight = require("../models/Flight"); // Import Flight model
 const sendBookingConfirmation = require("../utils/sendBookingConfirmation");
 const jwt = require("jsonwebtoken");
 
 // Middleware: Validate booking request
 const validateBookingRequest = (req, res, next) => {
   const { flight, seatsBooked, totalPrice } = req.body;
-console.log("[DEBUG] Incoming booking request payload:", req.body);
+  console.log("[DEBUG] Incoming booking request payload:", req.body);
   if (!flight || !seatsBooked || !totalPrice) {
     return res.status(400).json({
       message: "Missing required fields: flight, seatsBooked, totalPrice",
@@ -99,8 +100,9 @@ router.get("/", authMiddleware, async (req, res) => {
 // Route: Create a new booking
 router.post("/", authMiddleware, validateBookingRequest, async (req, res) => {
   const { flight, seatsBooked, totalPrice } = req.body;
-console.log("[DEBUG] Received booking payload:", req.body);
+  console.log("[DEBUG] Received booking payload:", req.body);
   try {
+    // Check if the flight exists
     const flightExists = await Flight.findById(flight);
     if (!flightExists) {
       console.error("[ERROR] Flight not found:", flight);
