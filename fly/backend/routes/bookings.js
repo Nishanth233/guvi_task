@@ -99,8 +99,13 @@ router.get("/", authMiddleware, async (req, res) => {
 // Route: Create a new booking
 router.post("/", authMiddleware, validateBookingRequest, async (req, res) => {
   const { flight, seatsBooked, totalPrice } = req.body;
-
+console.log("[DEBUG] Received booking payload:", req.body);
   try {
+    const flightExists = await Flight.findById(flight);
+    if (!flightExists) {
+      console.error("[ERROR] Flight not found:", flight);
+      return res.status(404).json({ message: "Flight not found." });
+    }
     console.log("[INFO] Creating a new booking...");
 
     const newBooking = new Booking({
