@@ -8,22 +8,31 @@ const jwt = require("jsonwebtoken");
 // Middleware: Validate booking request
 const validateBookingRequest = (req, res, next) => {
   const { flight, seatsBooked, totalPrice } = req.body;
+
   if (!flight || !seatsBooked || !totalPrice) {
     return res.status(400).json({
       message: "Missing required fields: flight, seatsBooked, totalPrice",
     });
   }
+
   if (typeof seatsBooked !== "number" || typeof totalPrice !== "number") {
-    return res
-      .status(400)
-      .json({ message: "Invalid data types for seatsBooked or totalPrice." });
+    return res.status(400).json({
+      message: "Invalid data types for seatsBooked or totalPrice.",
+    });
   }
+
+  // Validate flight ID as a valid ObjectId
+  if (!mongoose.Types.ObjectId.isValid(flight)) {
+    return res.status(400).json({ message: "Invalid flight ID format." });
+  }
+
   next();
 };
 
 // Middleware: Authentication (JWT validation)
 const authMiddleware = (req, res, next) => {
   const authHeader = req.headers.authorization;
+
   if (!authHeader) {
     console.error("[ERROR] Authorization header is missing.");
     return res.status(401).json({ message: "Authorization header is missing" });
@@ -37,6 +46,12 @@ const authMiddleware = (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded || !decoded.user) {
+      console.error("[ERROR] Invalid token structure.");
+      return res.status(401).json({ message: "Invalid token structure" });
+    }
+
     req.user = decoded.user;
     console.log("[INFO] User authenticated:", req.user);
     next();
@@ -50,6 +65,7 @@ const authMiddleware = (req, res, next) => {
 router.get("/", authMiddleware, async (req, res) => {
   try {
     console.log("[INFO] Fetching bookings for user:", req.user.id);
+
     const bookings = await Booking.find({ user: req.user.id });
 
     if (!bookings.length) {
@@ -71,13 +87,9 @@ router.post("/", authMiddleware, validateBookingRequest, async (req, res) => {
 
   try {
     console.log("[INFO] Creating a new booking...");
-    // Validate and cast flight to ObjectId
-    if (!mongoose.Types.ObjectId.isValid(flight)) {
-      return res.status(400).json({ message: "Invalid flight ID format." });
-    }
 
     const newBooking = new Booking({
-      user: req.user.id,
+      user: req.user.id, // User ID from token
       flight: mongoose.Types.ObjectId(flight), // Cast flight to ObjectId
       seatsBooked,
       totalPrice,
