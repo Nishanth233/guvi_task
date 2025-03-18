@@ -146,9 +146,8 @@ const BookFlight = () => {
 
         // Send booking creation request
         await axios.post(
-          `https://flight-uxxl.onrender.com/api/bookings`,
+          "https://flight-uxxl.onrender.com/api/bookings",
           {
-            user: userId,
             flight: id,
             seatsBooked: 1,
             totalPrice: 1000,
@@ -156,10 +155,11 @@ const BookFlight = () => {
           },
           {
             headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
+              Authorization: `Bearer ${localStorage.getItem("token")}`, // Include token
             },
           }
         );
+
 
         console.log("[INFO] Booking created successfully.");
         setSuccess("Payment and booking succeeded!");

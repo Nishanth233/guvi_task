@@ -15,9 +15,15 @@ const validateBookingRequest = (req, res, next) => {
     });
   }
 
-  if (typeof seatsBooked !== "number" || typeof totalPrice !== "number") {
+  if (typeof seatsBooked !== "number" || seatsBooked <= 0) {
     return res.status(400).json({
-      message: "Invalid data types for seatsBooked or totalPrice.",
+      message: "seatsBooked must be a positive number.",
+    });
+  }
+
+  if (typeof totalPrice !== "number" || totalPrice <= 0) {
+    return res.status(400).json({
+      message: "totalPrice must be a positive number.",
     });
   }
 
@@ -47,15 +53,23 @@ const authMiddleware = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    if (!decoded || !decoded.user) {
-      console.error("[ERROR] Invalid token structure.");
+    // Updated to handle flat token structure with `id` directly
+    if (!decoded || !decoded.id) {
+      console.error("[ERROR] Invalid token structure:", decoded);
       return res.status(401).json({ message: "Invalid token structure" });
     }
 
-    req.user = decoded.user;
+    req.user = { id: decoded.id }; // Attach `id` directly to req.user
     console.log("[INFO] User authenticated:", req.user);
     next();
   } catch (err) {
+    if (err.name === "TokenExpiredError") {
+      console.error("[ERROR] Token has expired.");
+      return res
+        .status(401)
+        .json({ message: "Token expired. Please log in again." });
+    }
+
     console.error("[ERROR] Token verification failed:", err.message);
     return res.status(401).json({ message: "Invalid or expired token" });
   }

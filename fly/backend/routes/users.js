@@ -47,9 +47,15 @@ router.post("/login", async (req, res) => {
   if (!user || !bcrypt.compareSync(password, user.password)) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+
+  // Create token with id directly
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1h",
+  });
+
   res.json({ token, user });
 });
+
 
 // Fetch user profile
 router.get("/me", authMiddleware, async (req, res) => {

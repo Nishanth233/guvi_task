@@ -17,13 +17,13 @@ const authMiddleware = (req, res, next) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Ensure the decoded token contains a user
-    if (!decoded || !decoded.user) {
-      console.error("[ERROR] Invalid token structure.");
+    // Validate and attach id
+    if (!decoded || !decoded.id) {
+      console.error("[ERROR] Invalid token structure:", decoded);
       return res.status(401).json({ message: "Invalid token structure" });
     }
 
-    req.user = decoded.user;
+    req.user = { id: decoded.id }; // Attach id to req.user
     console.log("[INFO] User authenticated:", req.user);
     next();
   } catch (err) {
