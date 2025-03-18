@@ -112,7 +112,7 @@ router.post("/", authMiddleware, validateBookingRequest, async (req, res) => {
 
     const newBooking = new Booking({
       user: req.user.id, // User ID from token
-      flight: mongoose.Types.ObjectId(flight), // Cast flight to ObjectId
+      flight: new mongoose.Types.ObjectId(flight), // Cast flight to ObjectId
       seatsBooked,
       totalPrice,
       status: "Confirmed",

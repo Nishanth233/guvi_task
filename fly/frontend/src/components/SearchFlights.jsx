@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import Footer from "./Footer";
-import { debounce } from "lodash"; // Import lodash debounce function
+import { debounce } from "lodash";
 
 const SearchFlights = () => {
   const [departure, setDeparture] = useState("");
@@ -45,8 +45,13 @@ const SearchFlights = () => {
         `https://flight-uxxl.onrender.com/api/flights`,
         { params: { departure, arrival, date } }
       );
-      setFlights(Array.isArray(response.data) ? response.data : []);
-      console.log("[DEBUG] Flights retrieved:", response.data); // Debugging log for flights
+      // Filter duplicates to avoid duplicate keys
+      const uniqueFlights = response.data.filter(
+        (flight, index, self) =>
+          index === self.findIndex((f) => f._id === flight._id)
+      );
+      setFlights(Array.isArray(uniqueFlights) ? uniqueFlights : []);
+      console.log("[DEBUG] Flights retrieved:", uniqueFlights); // Debugging log
     } catch (err) {
       console.error("[ERROR] Fetching flights failed:", err.message);
       setFlights([]);
@@ -86,7 +91,7 @@ const SearchFlights = () => {
                 <ul className="mt-2 w-full max-w-md bg-white border rounded shadow">
                   {departureSuggestions.map((suggestion) => (
                     <li
-                      key={suggestion.id}
+                      key={suggestion.iataCode} // Unique key for suggestions
                       onClick={() => handleSelectDeparture(suggestion.iataCode)}
                       className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                     >
@@ -112,7 +117,7 @@ const SearchFlights = () => {
                 <ul className="mt-2 w-full max-w-md bg-white border rounded shadow">
                   {arrivalSuggestions.map((suggestion) => (
                     <li
-                      key={suggestion.id}
+                      key={suggestion.iataCode} // Unique key for suggestions
                       onClick={() => handleSelectArrival(suggestion.iataCode)}
                       className="px-4 py-2 hover:bg-gray-200 cursor-pointer"
                     >
@@ -145,7 +150,7 @@ const SearchFlights = () => {
           {Array.isArray(flights) && flights.length > 0 ? (
             <ul className="space-y-4">
               {flights.map((flight) => (
-                <li key={flight.id} className="p-4 bg-gray-100 rounded shadow">
+                <li key={flight._id} className="p-4 bg-gray-100 rounded shadow">
                   <p>
                     <strong>Flight Number:</strong>{" "}
                     {flight.flightNumber || "N/A"}
@@ -163,16 +168,13 @@ const SearchFlights = () => {
                   </p>
                   <p>
                     <strong>Price:</strong>{" "}
-                    {`${flight.price.currency || "N/A"} ${
-                      flight.price.total || "N/A"
+                    {`${flight.price?.currency || "N/A"} ${
+                      flight.price?.total || "N/A"
                     }`}
                   </p>
                   <Link
-                    to={`/book/${flight.id}`}
+                    to={`/book/${flight._id}`} // Unique key usage for links
                     className="inline-block mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-                    onClick={() =>
-                      console.log("[DEBUG] Selected flight ID:", flight.id)
-                    } // Debugging log added here
                   >
                     Book
                   </Link>
