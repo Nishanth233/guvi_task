@@ -14,7 +14,6 @@ const amadeus = new Amadeus({
 router.get("/", async (req, res) => {
   try {
     const { departure, arrival, date } = req.query;
-    console.log("Flight search request:", { departure, arrival, date });
 
     // Make Amadeus API call
     const response = await amadeus.shopping.flightOffersSearch.get({
@@ -25,8 +24,6 @@ router.get("/", async (req, res) => {
     });
 
     if (response.data) {
-      console.log("Flights found:", response.data);
-
       const flights = await Promise.all(
         response.data.map(async (flight) => {
           const flightNumber =
@@ -55,23 +52,18 @@ router.get("/", async (req, res) => {
               },
             });
 
-            existingFlight = await newFlight.save(); // Save flight and use the saved data
-            console.log("[INFO] New flight saved:", existingFlight);
-          } else {
-            console.log("[INFO] Flight already exists:", existingFlight);
+            existingFlight = await newFlight.save();
           }
 
-          return existingFlight; // Return the existing or new flight
+          return existingFlight;
         })
       );
 
-      res.json(flights); // Send flights from the database
+      res.json(flights);
     } else {
-      console.log("No flights found");
       res.json([]);
     }
   } catch (error) {
-    console.error("Error fetching flights from Amadeus:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
@@ -89,15 +81,9 @@ router.get("/live/:flightNumber", async (req, res) => {
         },
       }
     );
-    console.log(
-      "API Request URL:",
-      `http://api.aviationstack.com/v1/flights?access_key=${process.env.AVIATIONSTACK_API_KEY}&flight_iata=${flightNumber}`
-    );
     const flightData = response.data.data[0];
-    console.log("API Response Data:", flightData); // Log the response data
     res.json(flightData);
   } catch (error) {
-    console.error("Error fetching live flight data:", error);
     res.status(500).json({ message: "Server error" });
   }
 });
