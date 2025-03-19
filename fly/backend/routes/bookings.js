@@ -105,9 +105,14 @@ router.post("/", authMiddleware, validateBookingRequest, async (req, res) => {
 
     // Send booking confirmation email
     try {
-      await sendBookingConfirmation(newBooking);
+      // Pass the email from req.body to the confirmation utility
+      await sendBookingConfirmation({ ...newBooking._doc, user: { email } });
+      console.log("Booking confirmation email sent successfully.");
     } catch (emailError) {
-      console.error("[ERROR] Failed to send booking confirmation email:", emailError.message);
+      console.error(
+        "Failed to send booking confirmation email:",
+        emailError.message
+      );
     }
 
     res.status(201).json({
