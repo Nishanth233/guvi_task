@@ -81,6 +81,7 @@ const BookFlight = () => {
           seatsBooked: 1,
           totalPrice: 1000,
           status: "Confirmed",
+          email,
         };
 
         console.log("[DEBUG] Booking payload:", bookingPayload);
