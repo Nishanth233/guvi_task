@@ -8,11 +8,15 @@ const jwt = require("jsonwebtoken");
 
 // Middleware: Validate booking request
 const validateBookingRequest = (req, res, next) => {
-  const { flight, seatsBooked, totalPrice } = req.body;
-  if (!flight || !seatsBooked || !totalPrice) {
+  const { flight, seatsBooked, totalPrice, email } = req.body;
+  if (!flight || !seatsBooked || !totalPrice || !email) {
     return res.status(400).json({
-      message: "Missing required fields: flight, seatsBooked, totalPrice",
+      message: "Missing required fields: flight, seatsBooked, totalPrice, email",
     });
+  }
+
+if (typeof email !== "string" || !email.includes("@")) {
+    return res.status(400).json({ message: "A valid email is required." });
   }
 
   if (typeof seatsBooked !== "number" || seatsBooked <= 0) {
@@ -85,7 +89,7 @@ router.get("/", authMiddleware, async (req, res) => {
 
 // Route: Create a new booking
 router.post("/", authMiddleware, validateBookingRequest, async (req, res) => {
-  const { flight, seatsBooked, totalPrice } = req.body;
+  const { flight, seatsBooked, totalPrice, email } = req.body;
 console.log("Email from request body:", email);
   try {
     const flightExists = await Flight.findById(flight);
