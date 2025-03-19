@@ -8,15 +8,11 @@ const jwt = require("jsonwebtoken");
 
 // Middleware: Validate booking request
 const validateBookingRequest = (req, res, next) => {
-  const { flight, seatsBooked, totalPrice, email } = req.body;
-  if (!flight || !seatsBooked || !totalPrice || !email) {
+  const { flight, seatsBooked, totalPrice } = req.body;
+  if (!flight || !seatsBooked || !totalPrice) {
     return res.status(400).json({
-      message: "Missing required fields: flight, seatsBooked, totalPrice, email",
+      message: "Missing required fields: flight, seatsBooked, totalPrice",
     });
-  }
-
-if (typeof email !== "string" || !email.includes("@")) {
-    return res.status(400).json({ message: "A valid email is required." });
   }
 
   if (typeof seatsBooked !== "number" || seatsBooked <= 0) {
@@ -89,8 +85,8 @@ router.get("/", authMiddleware, async (req, res) => {
 
 // Route: Create a new booking
 router.post("/", authMiddleware, validateBookingRequest, async (req, res) => {
-  const { flight, seatsBooked, totalPrice, email } = req.body;
-console.log("Email from request body:", email);
+  const { flight, seatsBooked, totalPrice } = req.body;
+
   try {
     const flightExists = await Flight.findById(flight);
     if (!flightExists) {
@@ -109,14 +105,9 @@ console.log("Email from request body:", email);
 
     // Send booking confirmation email
     try {
-      // Pass the email from req.body to the confirmation utility
-      await sendBookingConfirmation({ ...newBooking._doc, user: { email } });
-      console.log("Booking confirmation email sent successfully.");
+      await sendBookingConfirmation(newBooking);
     } catch (emailError) {
-      console.error(
-        "Failed to send booking confirmation email:",
-        emailError.message
-      );
+      console.error("[ERROR] Failed to send booking confirmation email:", emailError.message);
     }
 
     res.status(201).json({
