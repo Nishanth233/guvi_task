@@ -9,7 +9,14 @@ dotenv.config();
 const app = express();
 connectDB();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "http://localhost:5173",
+      "https://bright-churros-e4c644.netlify.app",
+    ],
+  })
+);
 app.use(bodyParser.json());
 app.use("/api/auth", authRoutes);
 
